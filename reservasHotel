@@ -1,0 +1,140 @@
+from tkinter import *
+from tkinter import messagebox
+import sqlite3
+from tkinter import ttk
+import tkinter as tk
+
+#------------------- funciones------------------------------------------
+
+#--------------------- funcion crear la base de datos---------------------------------------
+
+def crearBBDD ():
+    try:
+    
+        mi_conexion = sqlite3.connect("CADENA_HOTELERA_RESERVAS")
+        mi_cursor = mi_conexion.cursor()       
+        mi_cursor.execute("CREATE TABLE RESERVAS( ID_CLIENTE INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR (50), IDENTIFICACION INTEGER (50), SEDE VARCHAR(50),  HABITACION VARCHAR (20), CANT_PERSONAS INTEGER (20))")
+                
+        messagebox.showinfo("BBDD", "BBDD Y TABLAS CREADAS CON EXITO")
+
+    except:
+        messagebox.showwarning("BBDD YA EXISTE")
+
+
+# ---------------------- REGISTRAR RESERVA---------------------------------------------------------
+
+def registro_reserva():
+    
+    mi_conexion = sqlite3.connect("CADENA_HOTELERA_RESERVAS")
+    mi_cursor = mi_conexion.cursor()
+
+    datos = mi_nombre.get(), mi_identificacion.get(), mi_sede.get(), mi_habitacion.get(), mi_cant_personas.get()
+    mi_cursor.execute("INSERT INTO RESERVAS VALUES (NULL, ?,?,?,?,?)", (datos))  
+  
+    mi_conexion.commit()
+
+    messagebox.showinfo("BBDD", "Registro Exitoso")
+
+
+
+root = Tk()
+
+mi_nombre = StringVar()
+mi_identificacion = StringVar()
+mi_sede = StringVar()
+mi_habitacion = StringVar()
+mi_cant_personas = StringVar()
+
+
+root.title("RESERVAS")
+
+miFrame = Frame(root)
+miFrame.pack()
+
+#-------------------------------datos de quien reserva --------------------------
+
+label_nombre_cliente = Label(miFrame, text = "Nombre Cliente:")
+label_nombre_cliente.grid(row=3, column=0, sticky="e", padx=10,)
+
+label_identificacion_cliente = Label(miFrame, text = "Identificacion:")
+label_identificacion_cliente .grid(row=4, column=0, sticky="e", padx=10,)
+
+entry_nombre = Entry(miFrame, textvariable=mi_nombre)
+entry_nombre.grid(row=3, column=1, padx=10, pady=10)
+
+entry_identificacion = Entry(miFrame, textvariable=mi_identificacion)
+entry_identificacion.grid(row=4, column=1, padx=10, pady=10)
+
+
+#----------------------- tarifas--------------------------------------------------
+
+label_disponibilidad_sedes = Label(miFrame, text = "Disponibilidad:")
+label_disponibilidad_sedes.grid(row=0, column=2, sticky="e", padx=10, pady=10)
+
+label_tarifa_sedes = Label(miFrame, text = "Tarifa:")
+label_tarifa_sedes.grid(row=1, column=2, sticky="e", padx=10, pady=10)
+
+label_valor_tarifa = Label(miFrame, background="yellow", text = "")
+label_valor_tarifa.grid(row=1, column=3, sticky="e", padx=10, pady=10)
+
+label_disponibildad_si_no = Label(miFrame, background="yellow", text = "")
+label_disponibildad_si_no.grid(row=0, column=3, sticky="e", padx=10, pady=10)
+
+#------------------------- sedes------------------------------------------------------------------
+
+label_sedes = Label(miFrame, text = "Sedes:")
+label_sedes.grid(row=0, column=0, sticky="e", padx=10, pady=10)
+
+sedes_entry =ttk.Combobox(miFrame, width=17, state="readonly", textvariable=mi_sede)
+sedes_entry.place(x=30, y=77)
+sedes_entry.grid(row=0, column=1)
+
+valores_lista = ["Barranquilla","Cali", "Cartagena", "Bogota"]
+
+sedes_entry['values']=valores_lista
+
+# ---------------------------zona de habitaciones---------------------------------------------------------------
+
+label_habitaciones = Label(miFrame, text = "Habitaciones:")
+label_habitaciones.grid(row=1, column=0, sticky="e", padx=10, pady=10)
+
+habitaciones_entry =ttk.Combobox(miFrame, width=17, state="readonly", textvariable=mi_habitacion)
+habitaciones_entry.place(x=30, y=77)
+habitaciones_entry.grid(row=1, column=1)
+
+valores_lista = ["Standar","Premiun", "VIP"]
+
+habitaciones_entry['values']=valores_lista
+
+#----------------------cantidad de personas----------------------------------------------------------
+
+label_cant_personas = Label(miFrame, text = "Cantidad de personas:")
+label_cant_personas.grid(row=2, column=0, sticky="e", padx=10, pady=10)
+
+cant_personas_entry =ttk.Combobox(miFrame, width=17, state="readonly", textvariable=mi_cant_personas)
+cant_personas_entry.place(x=30, y=77)
+cant_personas_entry.grid(row=2, column=1)
+
+valores_lista = ["1","2","3","4","5","6","7","8"]
+
+cant_personas_entry ['values']=valores_lista
+
+#------------------- zona botonoes-----------------------------------------------------
+
+boton_reservar = Button(miFrame, text ="RESERVAR", command = registro_reserva)
+boton_reservar.grid(row=5, column = 1, sticky="e", padx=10, pady=10)
+
+boton_crear_BBDD = Button(miFrame, text ="CREAR BBDD", command = crearBBDD)
+boton_crear_BBDD.grid(row=5, column = 0, sticky="e", padx=10, pady=10)
+
+
+
+
+root.mainloop()  
+
+"""el gestor de base de datos que se utilizo es SQLITE3,
+1. click en el boton crear base de datos
+2. se ingresan los datos 
+3. click en el boton registrar
+
+faltaron las funciones para calcular el valor a pagar segun la temporada y el tipo de habitacion; pero quise evidenciar mas que todo que se haga la conexion y el registro de los datos"""
